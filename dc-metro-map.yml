@@ -1,0 +1,19 @@
+---
+- name: Deploy DC Metro Map application
+  hosts: localhost
+  become: no
+  
+  tasks:
+    - name: Create dc-metro-map project
+      shell: oc new-project dc-metro-map
+      register: new_project_result
+
+    - name: deploy app
+      shell: oc new-app --name=dc-metro-map https://github.com/RedHatGov/openshift-workshops.git --context-dir=dc-metro-map
+      register: new_app_result
+      when: new_project_result is not failed
+  
+    - name: expose app
+      shell: oc expose svc/dc-metro-map
+      register: expose_app_result 
+      when: new_app_result is not failed
